@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartType } from 'chart.js';
 
@@ -10,19 +10,36 @@ import { ChartData, ChartType } from 'chart.js';
   styleUrl: './base-chart.css',
 })
 
-export class BaseChart {
-  public lineChartData: ChartData<'line'> = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    datasets: [
-      { data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A' }
-    ]
+export class BaseChart implements OnInit {
+
+  champions: any[] = [];
+
+  ngOnInit() {
+    fetch('assets/champions.json')
+      .then(response => response.json())
+      .then(data => {
+        this.champions = data;
+        // Adapter les données pour le bar chart
+        this.barChartData = {
+          labels: data.labels,
+          datasets: data.datasets
+        };
+      })
+      .catch(error => {
+        console.error('Erreur lors du chargement du JSON:', error);
+      });
+  }
+
+  public barChartData: ChartData<'bar'> = {
+    labels: [],
+    datasets: []
   };
 
-  public lineChartOptions = {
+  public barChartOptions = {
     responsive: true,
   };
 
-  public lineChartLegend = true;
+  public barChartLegend = true;
 
-  public lineChartType: ChartType = 'line';
+  public barChartType: ChartType = 'bar';
 }
